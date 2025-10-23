@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lower Thirds Editor - OBS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@400;700&family=Poppins:wght@400;700&family=Bebas+Neue&family=Oswald:wght@400;700&family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📺 Lower Thirds Editor</h1>
+        <p class="subtitle">Crea y gestiona tus lower thirds para OBS</p>
+
+        <!-- Main Controls -->
+        <div class="main-controls">
+            <div class="control-group">
+                <label>📁 Logo (PNG)</label>
+                <input type="file" id="logoUpload" accept="image/png,image/svg+xml,image/jpeg">
+            </div>
+
+            <div class="control-group">
+                <label>📝 Texto Principal</label>
+                <input type="text" id="mainText" placeholder="Nombre o Título">
+            </div>
+
+            <div class="control-group">
+                <label>📝 Texto Secundario</label>
+                <input type="text" id="secondaryText" placeholder="Descripción o Subtítulo">
+            </div>
+
+            <div class="control-group">
+                <label>🎨 Fuente</label>
+                <select id="fontSelect">
+                    <option value="Roboto">Roboto</option>
+                    <option value="Montserrat">Montserrat</option>
+                    <option value="Poppins">Poppins</option>
+                    <option value="Bebas Neue">Bebas Neue</option>
+                    <option value="Oswald">Oswald</option>
+                    <option value="Playfair Display">Playfair Display</option>
+                    <option value="Dancing Script">Dancing Script</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>🎨 Color de Fondo</label>
+                <div class="color-input-wrapper">
+                    <input type="color" id="bgColor" value="#1a1a1a">
+                    <input type="text" id="bgColorHex" value="#1a1a1a" maxlength="7" placeholder="#000000">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="bgTransparent">
+                    <span>🔲 Fondo Transparente</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label>🌈 Opacidad Fondo (%)</label>
+                <input type="number" id="bgOpacity" min="0" max="100" value="90">
+            </div>
+
+            <div class="control-group">
+                <label>💫 Animación Contenedor</label>
+                <select id="containerAnimation">
+                    <option value="slideInLeft">Deslizar desde izquierda</option>
+                    <option value="slideInRight">Deslizar desde derecha</option>
+                    <option value="slideInBottom">Deslizar desde abajo</option>
+                    <option value="fadeIn">Aparecer gradual</option>
+                    <option value="zoomIn">Zoom in</option>
+                    <option value="bounceIn">Rebote</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>✨ Animación Texto</label>
+                <select id="textAnimation">
+                    <option value="none">Sin animación</option>
+                    <option value="typewriter">Máquina de escribir</option>
+                    <option value="fadeInUp">Aparecer desde abajo</option>
+                    <option value="glitch">Glitch</option>
+                    <option value="wave">Onda</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="neonEffect">
+                    <span>💡 Efecto Neón</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label>🌟 Color Neón</label>
+                <div class="color-input-wrapper">
+                    <input type="color" id="neonColor" value="#00ffff">
+                    <input type="text" id="neonColorHex" value="#00ffff" maxlength="7" placeholder="#000000">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>⏱️ Duración Animación (s)</label>
+                <input type="number" id="animDuration" min="0.1" max="5" step="0.1" value="1">
+            </div>
+
+            <div class="control-group">
+                <label>📏 Tamaño Logo (px)</label>
+                <input type="number" id="logoSize" min="30" max="150" value="80">
+            </div>
+
+            <div class="control-group">
+                <label>⏱️ Duración Visualización (s)</label>
+                <input type="number" id="displayDuration" min="3" max="60" step="1" value="10">
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="loopAnimation">
+                    <span>🔄 Repetir Animación Indefinidamente</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label>⏲️ Intervalo de Repetición (s)</label>
+                <input type="number" id="loopInterval" min="1" max="60" step="1" value="5">
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn-primary" onclick="addLowerThird()">➕ Agregar Lower Third</button>
+            <button class="btn-success" onclick="saveConfiguration()">💾 Guardar Configuración</button>
+            <button class="btn-success" onclick="loadConfiguration()">📂 Cargar Configuración</button>
+            <button class="btn-warning" onclick="exportJSON()">📤 Exportar JSON</button>
+            <button class="btn-warning" onclick="importJSON()">📥 Importar JSON</button>
+            <button class="btn-info" onclick="generateViewerLink()">🔗 Generar Link Viewer</button>
+        </div>
+
+        <!-- Rotation Controls -->
+        <div class="rotation-controls">
+            <h3>🔄 Rotación Automática</h3>
+            <div class="grid-2">
+                <div class="control-group">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="enableRotation">
+                        <span>Activar Rotación Automática</span>
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label>⏲️ Intervalo (segundos)</label>
+                    <input type="number" id="rotationInterval" min="3" max="60" value="10">
+                </div>
+            </div>
+        </div>
+
+        <!-- Lower Thirds List -->
+        <div class="lower-thirds-list">
+            <h2>📋 Lista de Lower Thirds</h2>
+            <div id="lowerThirdsList"></div>
+        </div>
+
+        <!-- Viewer Section -->
+        <div class="viewer-section">
+            <h2>👁️ Visualizador para OBS</h2>
+            <p style="margin-bottom: 15px; color: #555;">
+                <strong>📋 Pasos para usar en OBS:</strong><br>
+                1. Haz clic en "🔗 Generar Link Viewer" arriba<br>
+                2. Se descargará un archivo HTML con tu configuración<br>
+                3. Mueve el archivo descargado a esta carpeta del proyecto<br>
+                4. En OBS: Añade "Browser Source" → Marca "Local file" → Busca el archivo descargado<br>
+                5. Copia la ruta de abajo si OBS te la pide
+            </p>
+            <div class="viewer-link" id="viewerLink" style="font-size: 12px; word-break: break-all;">
+                Haz clic en "Generar Link Viewer" para crear el archivo
+            </div>
+            <button class="btn-info" onclick="copyViewerLink()">📋 Copiar Ruta</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-creator">
+                <h3>💜 Realizado por Tony Reel</h3>
+                <p class="footer-subtitle">Agradecer y compartir no cuesta nada, espero lo disfrutes</p>
+            </div>
+
+            <div class="footer-socials">
+                <p class="footer-follow">Sígueme en mis redes:</p>
+                <div class="social-links">
+                    <a href="https://www.tiktok.com/@tonyreel593" target="_blank" class="social-link tiktok" title="TikTok">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                        </svg>
+                        <span>TikTok</span>
+                    </a>
+                    <a href="https://www.youtube.com/@tonyreel" target="_blank" class="social-link youtube" title="YouTube">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                        <span>YouTube</span>
+                    </a>
+                    <a href="https://kick.com/tonyreel" target="_blank" class="social-link kick" title="Kick">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M16.5 3L9 12l7.5 9h3L12 12l7.5-9z"/>
+                            <path d="M4.5 3v18h3V3z"/>
+                        </svg>
+                        <span>Kick</span>
+                    </a>
+                    <a href="https://www.twitch.tv/tonyreel" target="_blank" class="social-link twitch" title="Twitch">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+                        </svg>
+                        <span>Twitch</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-heart">
+                <p>Hecho con 💜 para la comunidad</p>
+            </div>
+        </div>
+    </footer>
+
+    <input type="file" id="importJSONInput" accept=".json" style="display: none;">
+    <input type="file" id="loadConfigInput" accept=".json" style="display: none;">
+
+    <script src="functions.js"></script>
+</body>
+</html>

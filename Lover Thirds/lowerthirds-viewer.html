@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lower Thirds Viewer - OBS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@400;700&family=Poppins:wght@400;700&family=Bebas+Neue&family=Oswald:wght@400;700&family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: transparent;
+            overflow: hidden;
+            width: 1920px;
+            height: 1080px;
+        }
+
+        .lower-third {
+            position: absolute;
+            bottom: 50px;
+            left: 50px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 40px;
+            border-radius: 15px;
+            opacity: 0;
+            transform: translateX(-100%);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        .lower-third.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .logo {
+            object-fit: contain;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+        }
+
+        .text-content {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .main-text {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+        }
+
+        .secondary-text {
+            font-size: 20px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 1px 1px 6px rgba(0,0,0,0.8);
+        }
+
+        .neon {
+            text-shadow:
+                0 0 10px currentColor,
+                0 0 20px currentColor,
+                0 0 30px currentColor,
+                0 0 40px currentColor,
+                0 0 70px currentColor;
+            animation: neonPulse 2s ease-in-out infinite;
+        }
+
+        /* Container Animations */
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInBottom {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Text Animations */
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes neonPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Fade out animation */
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .lower-third.fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div id="lowerThirdContainer"></div>
+
+    <script>
+        // Este es un ejemplo de datos. Cuando uses "Generar Link Viewer" en el editor,
+        // se creará un nuevo archivo con tus datos personalizados.
+        const data = {
+            "lowerThirds": [
+                {
+                    "id": 1,
+                    "logo": null,
+                    "mainText": "Ejemplo de Lower Third",
+                    "secondaryText": "Usa el editor para crear los tuyos",
+                    "font": "Roboto",
+                    "bgColor": "#1a1a1a",
+                    "bgOpacity": "90",
+                    "bgTransparent": false,
+                    "containerAnimation": "slideInLeft",
+                    "textAnimation": "none",
+                    "neonEffect": false,
+                    "neonColor": "#00ffff",
+                    "animDuration": "1",
+                    "logoSize": "80",
+                    "displayDuration": "10",
+                    "loopAnimation": false,
+                    "loopInterval": "5"
+                }
+            ],
+            "rotation": {
+                "enabled": false,
+                "interval": 10
+            }
+        };
+
+        let currentIndex = 0;
+        let rotationTimer = null;
+        let isTransitioning = false;
+
+        function hexToRgba(hex, opacity) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
+        }
+
+        function showLowerThird(index) {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
+            const container = document.getElementById('lowerThirdContainer');
+            const lt = data.lowerThirds[index];
+
+            const bgColor = lt.bgTransparent ? 'transparent' : hexToRgba(lt.bgColor, lt.bgOpacity);
+            const neonClass = lt.neonEffect ? 'neon' : '';
+            const neonStyle = lt.neonEffect ? `color: ${lt.neonColor};` : '';
+
+            // Fade out current element
+            const currentElement = container.querySelector('.lower-third');
+            if (currentElement) {
+                currentElement.classList.add('fade-out');
+                setTimeout(() => {
+                    createNewLowerThird();
+                }, 500);
+            } else {
+                createNewLowerThird();
+            }
+
+            function createNewLowerThird() {
+                container.innerHTML = `
+                    <div class="lower-third active" style="
+                        background: ${bgColor};
+                        font-family: '${lt.font}', sans-serif;
+                        animation: ${lt.containerAnimation} ${lt.animDuration}s ease-out ${lt.loopAnimation ? 'infinite' : ''};
+                    ">
+                        ${lt.logo ? `<img src="${lt.logo}" class="logo" style="width: ${lt.logoSize}px; height: ${lt.logoSize}px;" alt="Logo">` : ''}
+                        <div class="text-content">
+                            <div class="main-text ${neonClass}" style="${neonStyle}">${lt.mainText}</div>
+                            ${lt.secondaryText ? `<div class="secondary-text">${lt.secondaryText}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+
+                setTimeout(() => {
+                    isTransitioning = false;
+                }, parseFloat(lt.animDuration) * 1000);
+
+                // Si la animación se repite indefinidamente, reiniciarla en el intervalo especificado
+                if (lt.loopAnimation && lt.loopInterval) {
+                    const loopDuration = parseInt(lt.loopInterval) * 1000;
+                    clearTimeout(rotationTimer);
+                    rotationTimer = setTimeout(() => {
+                        const element = container.querySelector('.lower-third');
+                        if (element) {
+                            element.style.animation = 'none';
+                            setTimeout(() => {
+                                element.style.animation = `${lt.containerAnimation} ${lt.animDuration}s ease-out`;
+                            }, 10);
+                        }
+                        isTransitioning = false;
+                        showLowerThird(index);
+                    }, loopDuration);
+                }
+                // Schedule next lower third with individual duration
+                else if (data.rotation.enabled && data.lowerThirds.length > 1) {
+                    const duration = lt.displayDuration ? parseInt(lt.displayDuration) * 1000 : data.rotation.interval * 1000;
+                    clearTimeout(rotationTimer);
+                    rotationTimer = setTimeout(() => {
+                        currentIndex = (currentIndex + 1) % data.lowerThirds.length;
+                        showLowerThird(currentIndex);
+                    }, duration);
+                }
+            }
+        }
+
+        function startRotation() {
+            if (data.lowerThirds.length > 0) {
+                showLowerThird(currentIndex);
+            }
+        }
+
+        // Keyboard controls for manual navigation (útil para testing)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && data.lowerThirds.length > 1) {
+                clearInterval(rotationTimer);
+                currentIndex = (currentIndex + 1) % data.lowerThirds.length;
+                showLowerThird(currentIndex);
+            } else if (e.key === 'ArrowLeft' && data.lowerThirds.length > 1) {
+                clearInterval(rotationTimer);
+                currentIndex = (currentIndex - 1 + data.lowerThirds.length) % data.lowerThirds.length;
+                showLowerThird(currentIndex);
+            } else if (e.key === 'r' && data.rotation.enabled) {
+                startRotation();
+            }
+        });
+
+        // Start on load
+        window.addEventListener('load', () => {
+            startRotation();
+        });
+    </script>
+</body>
+</html>
