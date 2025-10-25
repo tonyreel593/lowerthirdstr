@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lower Thirds Editor - OBS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@400;700&family=Poppins:wght@400;700&family=Bebas+Neue&family=Oswald:wght@400;700&family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@400;700&family=Inter:wght@400;700&family=Lato:wght@400;700&family=Open+Sans:wght@400;700&family=Raleway:wght@400;700&family=Source+Sans+Pro:wght@400;700&family=Ubuntu:wght@400;700&family=Nunito:wght@400;700&family=PT+Sans:wght@400;700&family=Merriweather:wght@400;700&family=Anton&family=Pacifico&family=Permanent+Marker&family=Righteous&family=Abril+Fatface&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📺 Lower Thirds Editor</h1>
+        <p class="subtitle">Crea y gestiona tus lower thirds para OBS</p>
+
+        <!-- Info Section -->
+        <div class="info-banner">
+            <div class="info-content">
+                <p class="info-text">
+                    ✨ <strong>Configura tus banners y lower thirds fácilmente.</strong><br>
+                    Personaliza su diseño, visualiza los cambios en tiempo real y genera tu archivo compatible con OBS en la parte inferior.
+                    <span class="highlight">¡No te olvides de seguirme y compartir!</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Main Controls -->
+        <div class="main-controls">
+            <!-- Sección: Imágenes -->
+            <h3 class="section-title" style="grid-column: 1/-1;">🖼️ Imágenes</h3>
+
+            <!-- Fila 1: Logo -->
+            <div class="control-group">
+                <label>📁 Logo (PNG)</label>
+                <input type="file" id="logoUpload" accept="image/png,image/svg+xml,image/jpeg">
+            </div>
+
+            <div class="control-group">
+                <label>📏 Tamaño Logo (px)</label>
+                <input type="number" id="logoSize" min="30" max="150" value="80">
+            </div>
+
+            <div class="control-group">
+                <label>🔘 Redondeo de Esquinas Logo (%)</label>
+                <input type="range" id="logoBorderRadius" min="0" max="50" value="0" step="5">
+                <output id="logoBorderRadiusValue" style="font-weight: bold; color: #667eea;">0%</output>
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                    0% = Cuadrado | 50% = Circular
+                </small>
+            </div>
+
+            <!-- Fila 2: Fondo -->
+            <div class="control-group" style="grid-column: 1;">
+                <label>🖼️ Fondo PNG (Alternativo)</label>
+                <input type="file" id="bgImageUpload" accept="image/png,image/jpeg,image/jpg">
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                    <strong>Medidas: 2048×2048px</strong> - Ignora color/transparencia
+                </small>
+            </div>
+
+            <div class="control-group">
+                <label>📐 Tamaño Fondo PNG (%)</label>
+                <input type="number" id="bgImageSize" min="50" max="200" value="100" step="5">
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                    100% = tamaño original | Menos = más pequeño | Más = más grande
+                </small>
+            </div>
+
+            <div class="control-group">
+                <label>↔️ Desplazamiento Horizontal Fondo PNG (px)</label>
+                <input type="range" id="bgImageOffsetX" min="-500" max="500" value="0" step="10">
+                <output id="bgImageOffsetXValue" style="font-weight: bold; color: #667eea;">0px</output>
+            </div>
+
+            <!-- Sección: Textos -->
+            <h3 class="section-title" style="grid-column: 1/-1;">✏️ Textos</h3>
+
+            <div class="control-group">
+                <label>📝 Texto Principal</label>
+                <input type="text" id="mainText" placeholder="Nombre o Título">
+            </div>
+
+            <div class="control-group">
+                <label>📝 Texto Secundario</label>
+                <input type="text" id="secondaryText" placeholder="Descripción o Subtítulo">
+            </div>
+
+            <div class="control-group">
+                <label>🎨 Fuente</label>
+                <select id="fontSelect">
+                    <optgroup label="Sans Serif Modernas">
+                        <option value="Roboto">Roboto</option>
+                        <option value="Inter">Inter</option>
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Poppins">Poppins</option>
+                        <option value="Open Sans">Open Sans</option>
+                        <option value="Lato">Lato</option>
+                        <option value="Raleway">Raleway</option>
+                        <option value="Source Sans Pro">Source Sans Pro</option>
+                        <option value="Ubuntu">Ubuntu</option>
+                        <option value="Nunito">Nunito</option>
+                        <option value="PT Sans">PT Sans</option>
+                    </optgroup>
+                    <optgroup label="Display y Títulos">
+                        <option value="Bebas Neue">Bebas Neue</option>
+                        <option value="Oswald">Oswald</option>
+                        <option value="Anton">Anton</option>
+                        <option value="Righteous">Righteous</option>
+                        <option value="Abril Fatface">Abril Fatface</option>
+                    </optgroup>
+                    <optgroup label="Serif Elegantes">
+                        <option value="Playfair Display">Playfair Display</option>
+                        <option value="Merriweather">Merriweather</option>
+                        <option value="Cinzel">Cinzel</option>
+                    </optgroup>
+                    <optgroup label="Decorativas">
+                        <option value="Dancing Script">Dancing Script</option>
+                        <option value="Pacifico">Pacifico</option>
+                        <option value="Permanent Marker">Permanent Marker</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>📏 Tamaño Texto Principal</label>
+                <select id="textSizeMain">
+                    <option value="20">Pequeño (20px)</option>
+                    <option value="24">Chico (24px)</option>
+                    <option value="28">Mediano-Chico (28px)</option>
+                    <option value="32" selected>Mediano (32px)</option>
+                    <option value="36">Mediano-Grande (36px)</option>
+                    <option value="42">Grande (42px)</option>
+                    <option value="48">Muy Grande (48px)</option>
+                    <option value="56">Extra Grande (56px)</option>
+                    <option value="64">Enorme (64px)</option>
+                    <option value="72">Gigante (72px)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>📏 Tamaño Texto Secundario</label>
+                <select id="textSizeSecondary">
+                    <option value="14">Pequeño (14px)</option>
+                    <option value="16">Chico (16px)</option>
+                    <option value="18">Mediano-Chico (18px)</option>
+                    <option value="20" selected>Mediano (20px)</option>
+                    <option value="24">Mediano-Grande (24px)</option>
+                    <option value="28">Grande (28px)</option>
+                    <option value="32">Muy Grande (32px)</option>
+                    <option value="36">Extra Grande (36px)</option>
+                    <option value="42">Enorme (42px)</option>
+                    <option value="48">Gigante (48px)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>🎨 Color Texto Principal</label>
+                <div class="color-input-wrapper">
+                    <input type="color" id="textColorMain" value="#ffffff">
+                    <input type="text" id="textColorMainHex" value="#ffffff" maxlength="7" placeholder="#000000">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>🎨 Color Texto Secundario</label>
+                <div class="color-input-wrapper">
+                    <input type="color" id="textColorSecondary" value="#ffffff">
+                    <input type="text" id="textColorSecondaryHex" value="#ffffff" maxlength="7" placeholder="#000000">
+                </div>
+            </div>
+
+            <!-- Sección: Posición de texto -->
+            <h3 class="section-title" style="grid-column: 1/-1;">📍 Posición de texto</h3>
+
+            <div class="control-group">
+                <label>📐 Alineación Texto Principal</label>
+                <select id="textAlignMain">
+                    <option value="left">⬅️ Izquierda</option>
+                    <option value="center">↔️ Centro</option>
+                    <option value="right">➡️ Derecha</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>📐 Alineación Texto Secundario</label>
+                <select id="textAlignSecondary">
+                    <option value="left">⬅️ Izquierda</option>
+                    <option value="center">↔️ Centro</option>
+                    <option value="right">➡️ Derecha</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>↔️ Desplazamiento Horizontal Texto Principal (px)</label>
+                <input type="range" id="textOffsetMainX" min="-200" max="200" value="0" step="5">
+                <output id="textOffsetMainXValue" style="font-weight: bold; color: #667eea;">0px</output>
+            </div>
+
+            <div class="control-group">
+                <label>↔️ Desplazamiento Horizontal Texto Secundario (px)</label>
+                <input type="range" id="textOffsetSecondaryX" min="-200" max="200" value="0" step="5">
+                <output id="textOffsetSecondaryXValue" style="font-weight: bold; color: #667eea;">0px</output>
+            </div>
+
+            <!-- Sección: Fondo -->
+            <h3 class="section-title" style="grid-column: 1/-1;">🎨 Fondo</h3>
+
+            <div class="control-group">
+                <label>🎨 Color de Fondo</label>
+                <div class="color-input-wrapper">
+                    <input type="color" id="bgColor" value="#1a1a1a">
+                    <input type="text" id="bgColorHex" value="#1a1a1a" maxlength="7" placeholder="#000000">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>🌈 Opacidad Fondo (%)</label>
+                <input type="number" id="bgOpacity" min="0" max="100" value="90">
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="bgTransparent">
+                    <span>🔲 Fondo Transparente</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="bgGradient">
+                    <span>🌈 Usar Degradado</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label>🎨 Color Degradado 1</label>
+                <div class="color-input-wrapper">
+                    <input type="color" id="bgGradientColor1" value="#667eea">
+                    <input type="text" id="bgGradientColor1Hex" value="#667eea" maxlength="7" placeholder="#000000">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>🎨 Color Degradado 2</label>
+                <div class="color-input-wrapper">
+                    <input type="color" id="bgGradientColor2" value="#764ba2">
+                    <input type="text" id="bgGradientColor2Hex" value="#764ba2" maxlength="7" placeholder="#000000">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>📐 Dirección Degradado</label>
+                <select id="bgGradientDirection">
+                    <option value="to right">➡️ Horizontal (Izq → Der)</option>
+                    <option value="to left">⬅️ Horizontal (Der → Izq)</option>
+                    <option value="to bottom">⬇️ Vertical (Arriba → Abajo)</option>
+                    <option value="to top">⬆️ Vertical (Abajo → Arriba)</option>
+                    <option value="135deg">↘️ Diagonal (Izq-Arr → Der-Abajo)</option>
+                    <option value="45deg">↗️ Diagonal (Izq-Abajo → Der-Arr)</option>
+                    <option value="225deg">↙️ Diagonal (Der-Arr → Izq-Abajo)</option>
+                    <option value="315deg">↖️ Diagonal (Der-Abajo → Izq-Arr)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>🔷 Estilo de Esquinas</label>
+                <select id="cornerStyle">
+                    <option value="none">⬜ Sin Estilo</option>
+                    <option value="rounded-sm">⬭ Redondeado Pequeño</option>
+                    <option value="rounded-md" selected>◯ Redondeado Medio</option>
+                    <option value="rounded-lg">⬮ Redondeado Grande</option>
+                    <option value="cut-left">◸ Corte Izquierdo</option>
+                    <option value="cut-right">◹ Corte Derecho</option>
+                    <option value="cut-both">◺ Corte Ambos Lados</option>
+                    <option value="diagonal-tl">◤ Diagonal Superior Izq</option>
+                    <option value="diagonal-tr">◥ Diagonal Superior Der</option>
+                    <option value="diagonal-br">◢ Diagonal Inferior Der</option>
+                    <option value="diagonal-bl">◣ Diagonal Inferior Izq</option>
+                    <option value="chevron-right">▶ Chevron Derecha</option>
+                    <option value="chevron-left">◀ Chevron Izquierda</option>
+                    <option value="pentagon">⬟ Pentágono</option>
+                    <option value="hexagon">⬡ Hexágono</option>
+                </select>
+            </div>
+
+            <!-- Sección: Animaciones -->
+            <h3 class="section-title" style="grid-column: 1/-1;">💫 Animaciones</h3>
+
+            <div class="control-group">
+                <label>💫 Animación de Entrada</label>
+                <select id="containerAnimation">
+                    <option value="slideInLeft">Deslizar desde izquierda</option>
+                    <option value="slideInRight">Deslizar desde derecha</option>
+                    <option value="slideInBottom">Deslizar desde abajo</option>
+                    <option value="fadeIn">Aparecer gradual</option>
+                    <option value="zoomIn">Zoom in</option>
+                    <option value="bounceIn">Rebote</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>👋 Animación de Salida</label>
+                <select id="exitAnimation">
+                    <option value="fadeOut">Desaparecer gradual</option>
+                    <option value="slideOutLeft">Deslizar hacia izquierda</option>
+                    <option value="slideOutRight">Deslizar hacia derecha</option>
+                    <option value="slideOutBottom">Deslizar hacia abajo</option>
+                    <option value="slideOutTop">Deslizar hacia arriba</option>
+                    <option value="zoomOut">Zoom out</option>
+                    <option value="bounceOut">Rebote hacia afuera</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>✨ Animación Texto</label>
+                <select id="textAnimation">
+                    <option value="none">Sin animación</option>
+                    <option value="typewriter">Máquina de escribir</option>
+                    <option value="fadeInUp">Aparecer desde abajo</option>
+                    <option value="glitch">Glitch</option>
+                    <option value="wave">Onda</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>⏱️ Duración Animación</label>
+                <select id="animDuration">
+                    <option value="1">1 segundo</option>
+                    <option value="2">2 segundos</option>
+                    <option value="3">3 segundos</option>
+                    <option value="5">5 segundos</option>
+                    <option value="10">10 segundos</option>
+                    <option value="15">15 segundos</option>
+                    <option value="20">20 segundos</option>
+                    <option value="25">25 segundos</option>
+                    <option value="30">30 segundos</option>
+                    <option value="35">35 segundos</option>
+                    <option value="40">40 segundos</option>
+                    <option value="45">45 segundos</option>
+                    <option value="50">50 segundos</option>
+                    <option value="55">55 segundos</option>
+                    <option value="60">60 segundos (1 minuto)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>🔄 Repetir Animación</label>
+                <select id="loopAnimation">
+                    <option value="none">No repetir (mostrar una sola vez)</option>
+                    <option value="infinite">Repetir indefinidamente cada vez</option>
+                    <option value="60">Repetir después de 1 minuto</option>
+                    <option value="120">Repetir después de 2 minutos</option>
+                    <option value="300">Repetir después de 5 minutos</option>
+                    <option value="600">Repetir después de 10 minutos</option>
+                    <option value="900">Repetir después de 15 minutos</option>
+                    <option value="1200">Repetir después de 20 minutos</option>
+                    <option value="1800">Repetir después de 30 minutos</option>
+                </select>
+            </div>
+
+            <!-- Sección: Efectos -->
+            <h3 class="section-title" style="grid-column: 1/-1;">✨ Efectos Especiales</h3>
+
+            <div class="control-group">
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="neonEffect">
+                    <span>💡 Efecto Neón</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label>🌟 Color Neón</label>
+                <div class="color-input-wrapper">
+                    <input type="color" id="neonColor" value="#00ffff">
+                    <input type="text" id="neonColorHex" value="#00ffff" maxlength="7" placeholder="#000000">
+                </div>
+            </div>
+
+            <!-- Sección: Posicionamiento -->
+            <h3 class="section-title" style="grid-column: 1/-1;">📍 Posición y Tiempo</h3>
+
+            <div class="control-group">
+                <label>📍 Posición en Pantalla</label>
+                <select id="screenPosition">
+                    <option value="bottom-left">Inferior Izquierda</option>
+                    <option value="bottom-center">Inferior Centro</option>
+                    <option value="bottom-right">Inferior Derecha</option>
+                    <option value="top-left">Superior Izquierda</option>
+                    <option value="top-center">Superior Centro</option>
+                    <option value="top-right">Superior Derecha</option>
+                    <option value="middle-left">Centro Izquierda</option>
+                    <option value="middle-center">Centro Centro</option>
+                    <option value="middle-right">Centro Derecha</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>⏱️ Duración Visualización (s)</label>
+                <input type="number" id="displayDuration" min="3" max="60" step="1" value="10">
+            </div>
+        </div>
+
+        <!-- Vista Previa -->
+        <div class="preview-section">
+            <h2>👁️ Vista Previa</h2>
+            <div class="preview-container">
+                <div id="livePreview" class="live-preview">
+                    <div class="lower-third-preview-display">
+                        <img id="previewLogo" class="preview-logo-display" style="display: none;">
+                        <div class="preview-text-content">
+                            <div id="previewMainText" class="preview-main-text">Texto Principal</div>
+                            <div id="previewSecondaryText" class="preview-secondary-text">Texto Secundario</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn-primary" onclick="addLowerThird()">➕ Agregar Lower Third</button>
+            <button class="btn-success" onclick="saveConfiguration()">💾 Guardar Configuración</button>
+            <button class="btn-success" onclick="loadConfiguration()">📂 Cargar Configuración</button>
+            <button class="btn-warning" onclick="exportJSON()">📤 Exportar JSON</button>
+            <button class="btn-warning" onclick="importJSON()">📥 Importar JSON</button>
+            <button class="btn-info" onclick="generateViewerLink()">📦 Descargar Archivo para OBS</button>
+        </div>
+
+        <!-- Rotation Controls -->
+        <div class="rotation-controls">
+            <h3>🔄 Rotación Automática</h3>
+            <div class="grid-2">
+                <div class="control-group">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="enableRotation">
+                        <span>Activar Rotación Automática</span>
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label>⏲️ Intervalo (segundos)</label>
+                    <input type="number" id="rotationInterval" min="3" max="60" value="10">
+                </div>
+            </div>
+        </div>
+
+        <!-- Lower Thirds List -->
+        <div class="lower-thirds-list">
+            <h2>📋 Lista de Lower Thirds</h2>
+            <div id="lowerThirdsList"></div>
+        </div>
+
+        <!-- Viewer Section -->
+        <div class="viewer-section">
+            <h2>👁️ Cómo Usar en OBS</h2>
+
+            <!-- Opción 1: Archivo Descargable (RECOMENDADO) -->
+            <div style="background: #fff3e0; padding: 20px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ff9800;">
+                <strong style="color: #e65100; font-size: 17px;">📦 MÉTODO RECOMENDADO: Archivo Descargable para OBS</strong>
+                <p style="color: #555; margin-top: 12px; margin-bottom: 12px; font-size: 15px;">
+                    <strong>Ventajas:</strong> Archivo único con toda tu configuración integrada, funciona sin internet, fácil de usar<br>
+                    <strong>Ideal para:</strong> Usar en OBS de forma simple y confiable
+                </p>
+                <div style="background: #fff; padding: 15px; border-radius: 6px; margin-top: 15px;">
+                    <strong style="color: #e65100;">📝 Pasos para usar en OBS:</strong>
+                    <ol style="margin: 10px 0 0 0; padding-left: 20px; color: #555; line-height: 1.9; font-size: 14px;">
+                        <li>Configura tus lower thirds arriba (textos, logos, animaciones, etc.)</li>
+                        <li>Haz clic en el botón <strong>"📦 Descargar Archivo para OBS"</strong></li>
+                        <li>Se descargará un archivo llamado <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px;">lowerthirds-view.html</code></li>
+                        <li>Abre OBS Studio</li>
+                        <li>Agrega una fuente → <strong>Browser</strong></li>
+                        <li>Marca <strong>"Local file"</strong></li>
+                        <li>Selecciona el archivo <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px;">lowerthirds-view.html</code> descargado</li>
+                        <li>Configura: Ancho <code>1920</code> / Alto <code>1080</code></li>
+                        <li>✅ ¡Listo! Tu lower third aparecerá automáticamente</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Opción 2: LocalStorage (Uso avanzado) -->
+            <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #4caf50;">
+                <strong style="color: #2e7d32;">🔄 Método Alternativo: LocalStorage (Uso Avanzado)</strong>
+                <p style="color: #555; margin-top: 8px; margin-bottom: 8px;">
+                    <strong>Ventajas:</strong> Cambios se actualizan automáticamente sin re-descargar<br>
+                    <strong>Ideal para:</strong> Uso personal cuando haces cambios frecuentes
+                </p>
+                <p style="color: #555; margin-top: 8px; margin-bottom: 0; font-size: 14px;">
+                    📝 <strong>Pasos:</strong><br>
+                    1. Usa el archivo <code style="background: #fff; padding: 2px 6px; border-radius: 3px;">lowerthirds-viewer.html</code> directamente desde tu carpeta local<br>
+                    2. En OBS: Browser Source → Local file → Selecciona <code>lowerthirds-viewer.html</code><br>
+                    3. Los cambios que hagas aquí se reflejarán automáticamente en OBS
+                </p>
+            </div>
+
+            <div class="viewer-link" id="viewerLink" style="font-size: 12px; word-break: break-all; background: #f5f5f5; padding: 10px; border-radius: 5px;">
+                Cargando ruta...
+            </div>
+            <div style="margin-top: 10px;">
+                <button class="btn-info" onclick="copyViewerLink()">📋 Copiar Ruta (Opción 1)</button>
+                <button class="btn-warning" onclick="showViewerPath()" style="margin-left: 10px;">📂 Ver Ruta Completa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-creator">
+                <h3>💜 Realizado por Tony Reel</h3>
+                <p class="footer-subtitle">Agradecer y compartir no cuesta nada, espero lo disfrutes</p>
+            </div>
+
+            <div class="footer-socials">
+                <p class="footer-follow">Sígueme en mis redes:</p>
+                <div class="social-links">
+                    <a href="https://www.tiktok.com/@tonyreel" target="_blank" class="social-link tiktok" title="TikTok">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                        </svg>
+                        <span>TikTok</span>
+                    </a>
+                    <a href="https://www.youtube.com/@tonyreel" target="_blank" class="social-link youtube" title="YouTube">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                        <span>YouTube</span>
+                    </a>
+                    <a href="https://kick.com/tonyreel" target="_blank" class="social-link kick" title="Kick">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M16.5 3L9 12l7.5 9h3L12 12l7.5-9z"/>
+                            <path d="M4.5 3v18h3V3z"/>
+                        </svg>
+                        <span>Kick</span>
+                    </a>
+                    <a href="https://www.twitch.tv/tonyreel" target="_blank" class="social-link twitch" title="Twitch">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+                        </svg>
+                        <span>Twitch</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-heart">
+                <p>Hecho con 💜 para la comunidad</p>
+            </div>
+        </div>
+    </footer>
+
+    <input type="file" id="importJSONInput" accept=".json" style="display: none;">
+    <input type="file" id="loadConfigInput" accept=".json" style="display: none;">
+
+    <script src="functions.js"></script>
+</body>
+</html>

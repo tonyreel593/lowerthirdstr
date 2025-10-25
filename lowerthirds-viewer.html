@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lower Thirds Viewer - OBS</title>
+
+    <!-- Optimización para OBS Browser Source -->
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@400;700&family=Poppins:wght@400;700&family=Bebas+Neue&family=Oswald:wght@400;700&family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@400;700&family=Inter:wght@400;700&family=Lato:wght@400;700&family=Open+Sans:wght@400;700&family=Raleway:wght@400;700&family=Source+Sans+Pro:wght@400;700&family=Ubuntu:wght@400;700&family=Nunito:wght@400;700&family=PT+Sans:wght@400;700&family=Merriweather:wght@400;700&family=Anton&family=Pacifico&family=Permanent+Marker&family=Righteous&family=Abril+Fatface&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background: transparent;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            min-width: 100vw;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .lower-third {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 0;
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        /* Posiciones en pantalla */
+        .position-bottom-left { bottom: 50px; left: 50px; }
+        .position-bottom-center { bottom: 50px; left: 50%; transform: translateX(-50%); }
+        .position-bottom-right { bottom: 50px; right: 50px; }
+        .position-top-left { top: 50px; left: 50px; }
+        .position-top-center { top: 50px; left: 50%; transform: translateX(-50%); }
+        .position-top-right { top: 50px; right: 50px; }
+        .position-middle-left { top: 50%; left: 50px; transform: translateY(-50%); }
+        .position-middle-center { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .position-middle-right { top: 50%; right: 50px; transform: translateY(-50%); }
+
+        .lower-third.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .logo {
+            object-fit: contain;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+        }
+
+        .text-content {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .main-text {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+        }
+
+        .secondary-text {
+            font-size: 20px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 1px 1px 6px rgba(0,0,0,0.8);
+        }
+
+        .neon {
+            text-shadow:
+                0 0 10px currentColor,
+                0 0 20px currentColor,
+                0 0 30px currentColor,
+                0 0 40px currentColor,
+                0 0 70px currentColor,
+                2px 2px 4px rgba(0, 0, 0, 0.5);
+            -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3);
+            text-stroke: 0.5px rgba(0, 0, 0, 0.3);
+            animation: neonPulse 2s ease-in-out infinite;
+        }
+
+        /* Container Animations */
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInBottom {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Text Animations */
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes neonPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Exit Animations */
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @keyframes slideOutLeft {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(-100%); opacity: 0; }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        @keyframes slideOutBottom {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0; }
+        }
+
+        @keyframes slideOutTop {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-100%); opacity: 0; }
+        }
+
+        @keyframes zoomOut {
+            from { transform: scale(1); opacity: 1; }
+            to { transform: scale(0); opacity: 0; }
+        }
+
+        @keyframes bounceOut {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.9); }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        /* Corner Styles - Optimized and Tested */
+        .corner-none { border-radius: 0; }
+        .corner-rounded-sm { border-radius: 5px; }
+        .corner-rounded-md { border-radius: 10px; }
+        .corner-rounded-lg { border-radius: 20px; }
+        .corner-cut-left { clip-path: polygon(20px 0, 100% 0, 100% 100%, 0 100%, 0 20px); }
+        .corner-cut-right { clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%); }
+        .corner-cut-both { clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%, 0 20px); }
+        .corner-diagonal-tl { clip-path: polygon(30px 0, 100% 0, 100% 100%, 0 100%, 0 30px); }
+        .corner-diagonal-tr { clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 0 100%); }
+        .corner-diagonal-br { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%); }
+        .corner-diagonal-bl { clip-path: polygon(0 0, 100% 0, 100% 100%, 30px 100%, 0 calc(100% - 30px)); }
+        .corner-chevron-right { clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 50%, calc(100% - 30px) 100%, 0 100%); }
+        .corner-chevron-left { clip-path: polygon(30px 0, 100% 0, 100% 100%, 30px 100%, 0 50%); }
+        .corner-pentagon { clip-path: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%); }
+        .corner-hexagon { clip-path: polygon(30% 0, 70% 0, 100% 50%, 70% 100%, 30% 100%, 0 50%); }
+    </style>
+</head>
+<body>
+    <div id="lowerThirdContainer"></div>
+
+    <script>
+        // Cargar datos desde URL parameters, localStorage, o datos de ejemplo
+        function loadData() {
+            // 1. Intentar cargar desde parámetros de URL (PRIORIDAD MÁXIMA para links compartidos)
+            const urlParams = new URLSearchParams(window.location.search);
+            const configParam = urlParams.get('config');
+
+            if (configParam) {
+                try {
+                    console.log('🔗 Cargando configuración desde URL...');
+                    const configJSON = decodeURIComponent(escape(atob(configParam)));
+                    const config = JSON.parse(configJSON);
+                    console.log('✅ Configuración cargada desde URL');
+                    return config;
+                } catch (error) {
+                    console.error('❌ Error al decodificar configuración de URL:', error);
+                }
+            }
+
+            // 2. Fallback a localStorage (para uso local)
+            const saved = localStorage.getItem('lowerThirdsData');
+            if (saved) {
+                try {
+                    console.log('✅ Configuración cargada desde localStorage');
+                    return JSON.parse(saved);
+                } catch (error) {
+                    console.error('Error al cargar datos de localStorage:', error);
+                }
+            }
+
+            // 3. Datos de ejemplo si no hay nada guardado
+            console.log('ℹ️ Usando datos de ejemplo');
+            return {
+                "lowerThirds": [
+                    {
+                        "id": 1,
+                        "logo": null,
+                        "mainText": "Lower Third de Ejemplo",
+                        "secondaryText": "Genera un link desde index.html para configurar",
+                        "font": "Roboto",
+                        "bgColor": "#1a1a1a",
+                        "bgOpacity": "90",
+                        "bgTransparent": false,
+                        "containerAnimation": "slideInLeft",
+                        "textAnimation": "none",
+                        "neonEffect": false,
+                        "neonColor": "#00ffff",
+                        "animDuration": "1",
+                        "screenPosition": "bottom-left",
+                        "logoSize": "80",
+                        "displayDuration": "10",
+                        "loopAnimation": false,
+                        "loopInterval": "5"
+                    }
+                ],
+                "rotation": {
+                    "enabled": false,
+                    "interval": 10
+                }
+            };
+        }
+
+        const data = loadData();
+
+        let currentIndex = 0;
+        let rotationTimer = null;
+        let isTransitioning = false;
+
+        function hexToRgba(hex, opacity) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
+        }
+
+        function showLowerThird(index) {
+            console.log(`🎬 showLowerThird llamado para índice ${index}, isTransitioning: ${isTransitioning}`);
+
+            if (isTransitioning) {
+                console.log('⚠️ Ya hay una transición en curso, saliendo...');
+                return;
+            }
+            isTransitioning = true;
+
+            const container = document.getElementById('lowerThirdContainer');
+            const lt = data.lowerThirds[index];
+            console.log(`📊 Lower third: loopAnimation=${lt.loopAnimation}, loopInterval=${lt.loopInterval}`);
+
+            // Determinar el estilo de fondo (PNG tiene prioridad sobre color)
+            let backgroundStyle = '';
+            let textContentBgStyle = '';
+            let containerPadding = '';
+            if (lt.bgImage) {
+                const bgSize = lt.bgImageSize || '100';
+                const bgOffsetX = lt.bgImageOffsetX || '0';
+                containerPadding = 'padding: 20px 40px;';
+                textContentBgStyle = `background-image: url('${lt.bgImage}'); background-size: ${bgSize}%; background-repeat: no-repeat; background-position: calc(50% + ${bgOffsetX}px) center; padding: 20px; border-radius: 15px; min-width: 400px; flex: 1;`;
+            } else if (lt.bgGradient) {
+                containerPadding = 'padding: 20px 40px;';
+                const color1 = hexToRgba(lt.bgGradientColor1 || '#667eea', lt.bgOpacity);
+                const color2 = hexToRgba(lt.bgGradientColor2 || '#764ba2', lt.bgOpacity);
+                const direction = lt.bgGradientDirection || 'to right';
+                backgroundStyle = `background: linear-gradient(${direction}, ${color1}, ${color2});`;
+                textContentBgStyle = `flex: 1;`;
+            } else {
+                containerPadding = 'padding: 20px 40px;';
+                const bgColor = lt.bgTransparent ? 'transparent' : hexToRgba(lt.bgColor, lt.bgOpacity);
+                backgroundStyle = `background: ${bgColor};`;
+                textContentBgStyle = `flex: 1;`;
+            }
+
+            const neonClass = lt.neonEffect ? 'neon' : '';
+            const textColorMain = lt.textColorMain || lt.textColor || '#ffffff';
+            const textColorSecondary = lt.textColorSecondary || lt.textColor || '#ffffff';
+            const textStyleMain = lt.neonEffect ? `color: ${lt.neonColor};` : `color: ${textColorMain};`;
+            const textStyleSecondary = lt.neonEffect ? `color: ${lt.neonColor};` : `color: ${textColorSecondary};`;
+
+            // Exit animation for current element
+            const currentElement = container.querySelector('.lower-third');
+            if (currentElement) {
+                const exitAnim = lt.exitAnimation || 'fadeOut';
+                console.log(`🔄 Elemento existente encontrado, aplicando ${exitAnim}...`);
+                currentElement.style.animation = `${exitAnim} 0.5s ease-out forwards`;
+
+                // Ocultar y eliminar el elemento después de la animación
+                setTimeout(() => {
+                    currentElement.style.opacity = '0';
+                    currentElement.style.visibility = 'hidden';
+                    setTimeout(() => {
+                        currentElement.remove();
+                        createNewLowerThird();
+                    }, 50);
+                }, 500);
+            } else {
+                console.log('✨ No hay elemento previo, creando directamente...');
+                createNewLowerThird();
+            }
+
+            function createNewLowerThird() {
+                console.log('🎨 Creando nuevo lower third...');
+                const positionClass = 'position-' + (lt.screenPosition || 'bottom-left');
+                const cornerClass = (!lt.bgImage && lt.cornerStyle) ? 'corner-' + lt.cornerStyle : '';
+
+                container.innerHTML = `
+                    <div class="lower-third active ${positionClass} ${cornerClass}" style="
+                        ${backgroundStyle}
+                        ${containerPadding}
+                        font-family: '${lt.font}', sans-serif;
+                        animation: ${lt.containerAnimation} ${lt.animDuration}s ease-out;
+                    ">
+                        ${lt.logo ? `<img src="${lt.logo}" class="logo" style="width: ${lt.logoSize}px; height: ${lt.logoSize}px; border-radius: ${lt.logoBorderRadius || 0}%;" alt="Logo">` : ''}
+                        <div class="text-content" style="${textContentBgStyle}">
+                            <div class="main-text ${neonClass}" style="${textStyleMain} font-size: ${lt.textSizeMain || 32}px; text-align: ${lt.textAlignMain || 'left'}; transform: translateX(${lt.textOffsetMainX || 0}px); ${lt.textAnimation && lt.textAnimation !== 'none' ? `animation: ${lt.textAnimation} ${lt.animDuration}s ease-out;` : ''}">${lt.mainText}</div>
+                            ${lt.secondaryText ? `<div class="secondary-text" style="${textStyleSecondary} font-size: ${lt.textSizeSecondary || 20}px; text-align: ${lt.textAlignSecondary || 'left'}; transform: translateX(${lt.textOffsetSecondaryX || 0}px); ${lt.textAnimation && lt.textAnimation !== 'none' ? `animation: ${lt.textAnimation} ${lt.animDuration}s ease-out; animation-delay: 0.2s;` : ''}">${lt.secondaryText}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+
+                const animationDuration = parseFloat(lt.animDuration) * 1000;
+                const displayTime = 5000; // 5 segundos de visualización estática
+                const fadeOutDuration = 500; // 0.5 segundos de fade-out
+
+                setTimeout(() => {
+                    console.log(`✅ Animación de entrada completada después de ${lt.animDuration}s`);
+                    isTransitioning = false;
+                }, animationDuration);
+
+                // Clear any existing timer
+                clearTimeout(rotationTimer);
+
+                // Determinar el comportamiento de repetición
+                const loopMode = lt.loopAnimation || 'none';
+                console.log(`🔄 Modo de loop: ${loopMode}`);
+
+                // Programar animación de salida después de: animación + 5s de visualización
+                const timeUntilExit = animationDuration + displayTime;
+                const exitAnim = lt.exitAnimation || 'fadeOut';
+
+                setTimeout(() => {
+                    const element = container.querySelector('.lower-third');
+                    if (element) {
+                        console.log(`👋 Aplicando ${exitAnim} después de 5s de visualización...`);
+                        element.style.animation = `${exitAnim} 0.5s ease-out forwards`;
+
+                        // Asegurar que el elemento se mantenga oculto después de la animación
+                        setTimeout(() => {
+                            element.style.opacity = '0';
+                            element.style.visibility = 'hidden';
+                        }, 500);
+                    }
+                }, timeUntilExit);
+
+                // Si la rotación automática está activada Y hay múltiples lower thirds
+                if (data.rotation.enabled && data.lowerThirds.length > 1) {
+                    // Esperar el ciclo completo: entrada + visible + salida
+                    const fullCycleDuration = animationDuration + displayTime + fadeOutDuration;
+
+                    console.log(`🔄 Rotación automática activada: esperando ciclo completo de ${fullCycleDuration}ms antes del siguiente`);
+                    console.log(`   - Entrada: ${animationDuration}ms + Visible: ${displayTime}ms + Salida: ${fadeOutDuration}ms`);
+
+                    // Programar el siguiente lower third después del ciclo completo
+                    rotationTimer = setTimeout(() => {
+                        console.log('⏭️ Cambiando al siguiente lower third...');
+                        currentIndex = (currentIndex + 1) % data.lowerThirds.length;
+                        showLowerThird(currentIndex);
+                    }, fullCycleDuration);
+                }
+                // Si el modo es "infinite" (repetir indefinidamente)
+                else if (loopMode === 'infinite') {
+                    // Tiempo total: animación + 5s visible + 0.5s fade-out
+                    const cycleDuration = animationDuration + displayTime + fadeOutDuration;
+                    console.log(`🔄 Repetición infinita: ciclo cada ${cycleDuration}ms (${cycleDuration/1000}s)`);
+
+                    rotationTimer = setTimeout(() => {
+                        console.log('⏰ Reiniciando animación infinita...');
+                        isTransitioning = false;
+                        showLowerThird(index);
+                    }, cycleDuration);
+                }
+                // Si el modo es un número (repetir después de X minutos)
+                else if (loopMode !== 'none' && !isNaN(parseInt(loopMode))) {
+                    const waitInterval = parseInt(loopMode) * 1000; // Ya viene en segundos
+                    // Tiempo total: animación + 5s visible + 0.5s fade-out + tiempo de espera
+                    const totalDuration = animationDuration + displayTime + fadeOutDuration + waitInterval;
+
+                    console.log(`🔄 Repetición programada: ${totalDuration}ms total (${totalDuration/60000} minutos)`);
+                    console.log(`   - Animación: ${animationDuration}ms`);
+                    console.log(`   - Visible: ${displayTime}ms`);
+                    console.log(`   - Fade-out: ${fadeOutDuration}ms`);
+                    console.log(`   - Espera: ${waitInterval}ms`);
+
+                    rotationTimer = setTimeout(() => {
+                        console.log('⏰ Reiniciando animación después del intervalo...');
+                        isTransitioning = false;
+                        showLowerThird(index);
+                    }, totalDuration);
+                }
+                // Si el modo es 'none', aplicar fade-out y dejar oculto
+                else {
+                    console.log('✋ No hay repetición configurada, se quedará oculto después del fade-out');
+                }
+            }
+        }
+
+        function startRotation() {
+            if (data.lowerThirds.length > 0) {
+                showLowerThird(currentIndex);
+            }
+        }
+
+        // Keyboard controls for manual navigation (útil para testing)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && data.lowerThirds.length > 1) {
+                clearInterval(rotationTimer);
+                currentIndex = (currentIndex + 1) % data.lowerThirds.length;
+                showLowerThird(currentIndex);
+            } else if (e.key === 'ArrowLeft' && data.lowerThirds.length > 1) {
+                clearInterval(rotationTimer);
+                currentIndex = (currentIndex - 1 + data.lowerThirds.length) % data.lowerThirds.length;
+                showLowerThird(currentIndex);
+            } else if (e.key === 'r' && data.rotation.enabled) {
+                startRotation();
+            }
+        });
+
+        // Auto-reload when localStorage changes (from another tab/window)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'lowerThirdsData') {
+                console.log('🔄 Configuración actualizada, recargando...');
+                location.reload();
+            }
+        });
+
+        // Check for updates every 2 seconds (for same-window updates)
+        let lastUpdate = data.lastUpdate || null;
+        setInterval(() => {
+            const saved = localStorage.getItem('lowerThirdsData');
+            if (saved) {
+                try {
+                    const newData = JSON.parse(saved);
+                    if (newData.lastUpdate && newData.lastUpdate !== lastUpdate) {
+                        console.log('🔄 Configuración actualizada, recargando...');
+                        location.reload();
+                    }
+                } catch (error) {
+                    console.error('Error al verificar actualizaciones:', error);
+                }
+            }
+        }, 2000);
+
+        // Start on load
+        window.addEventListener('load', () => {
+            console.log('✅ Lower Thirds Viewer cargado');
+            console.log('📊 Lower thirds encontrados:', data.lowerThirds.length);
+            startRotation();
+        });
+    </script>
+</body>
+</html>
